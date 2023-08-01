@@ -347,6 +347,7 @@ class OrderController extends AdminController
             <!-- <script src="../../js/modal.js"></script> -->
             <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
             <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <link rel="stylesheet" href="../css/modal.css">
        
             <style>
             input[type=file] {
@@ -377,6 +378,10 @@ class OrderController extends AdminController
                   vertical-align: 6px;
                   padding: 0px 7px;
                   font-size: 16px;
+              }
+              #OrderForm::before
+              {
+                display:none;
               }
             </style>
             </head>

@@ -23,6 +23,6 @@ Admin::favicon('/uploads/admin_logo_img.png');
 Admin::css('css/adminstyle.css');
 Admin::css('css/chat.css');
 Admin::css('css/booking.css');
-Admin::js('js/modal.js');
+// Admin::js('js/modal.js');
 
 
