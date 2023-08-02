@@ -86,19 +86,18 @@ class UserController extends AdminController
       
       return "Balance";
     })->expand(function($model){
-      $alluserdata=["Registration Amount"=>"<span style='color:red;font-weight:600'>Unpaid</span>","Booking Initial Amount"=>"<span style='color:red;font-weight:600'>Unpaid</span>","Final Amount"=>"<span style='color:red;font-weight:600'>Unpaid</span>"];
+      $alluserdata=["Registration Amount"=>"<span style='color:red;font-weight:600'>Unpaid</span>","Booking Initial Amount"=>"<span style='color:red;font-weight:600'>Unpaid</span>","Pending Amount"=>"<span style='color:red;font-weight:600'>N/A</span>","Final Amount"=>"<span style='color:red;font-weight:600'>Unpaid</span>"];
         $user_id=$this->getkey();
         $date=Carbon::now();
-        $allorders=Order::where('user_id',$user_id)->get();
+        $allorders=Order::where('user_id',$user_id)->where('payment_mode','online')->where('final_payment_status','verified')->get()->last();
 
-        
+  
         if(isset($allorders) && !empty($allorders))
         {
 
-          foreach($allorders as $order)
-          {
-            $order_id[]=$order->id;
-          }
+          
+            $order_id[]=$allorders->id;
+        
         }
         if(isset($order_id[0]) && !empty($order_id[0]))
         {
@@ -118,29 +117,17 @@ class UserController extends AdminController
           }
          
             $initial_amount=PaymentDataHandling::where('order_id',$order_id)->where('data','Booking_Amount')->get()->last();
-            $final_amount_deduction=PaymentDataHandling::where('order_id',$order_id)->where('data','Booking_Final_Amount')->get()->last();
-
-            if($final_amount_deduction !=null)
-            {
-                $final_amount_deduction_value= $final_amount_deduction->transaction_amount;
-            }
+           
             if(isset($initial_amount)&& !empty($initial_amount))
             {
               if(strtolower($initial_amount->payment_status) == strtolower('SUCCESS'))
               {
-            $cgstPercent = env('CGST', 9); // Set your CGST percentage here (e.g., 9%)
-            $sgstPercent = env('SGST', 9);
-            ; // Set your SGST percentage here (e.g., 9%)
-            $totalTaxAmount = ($final_amount_deduction_value * ($cgstPercent + $sgstPercent) / 100) ?? 0;
-            $centralTaxAmount = ($final_amount_deduction_value * $cgstPercent / 100) ?? 0;
-            $stateTaxAmount = ($final_amount_deduction_value * $sgstPercent / 100) ?? 0;
-            // iii- Find the complete amount
-            $completeAmount = ($final_amount_deduction_value + $totalTaxAmount) ?? 0;
-            $balance = $completeAmount -$initial_amount->transaction_amount;
+           
 
            
               
-              $alluserdata['Booking Initial Amount']=$balance."   <sapn style='color:green;font-weight:600'>(Outstanding Amount)</sapn>";
+              $alluserdata['Booking Initial Amount']=$initial_amount->transaction_amount."   <sapn style='color:green;font-weight:600'>(Outstanding Amount)</sapn>";
+              
               }
               else
               {
@@ -165,6 +152,7 @@ class UserController extends AdminController
               $completeAmount = ($totalAmount + $totalTaxAmount) ?? 0;
 
              $alluserdata['Final Amount']=$completeAmount."   <sapn style='color:green;font-weight:600'>(Paid)</sapn>";
+             $alluserdata['Pending Amount']=$completeAmount-$initial_amount->transaction_amount."   <sapn style='color:green;font-weight:600'>(Pending)</sapn>";
             }
             else
             {
