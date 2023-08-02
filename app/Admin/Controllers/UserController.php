@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Admin\Controllers\AttachmentController;
+use App\Models\Order;
 use App\Models\User;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
@@ -46,6 +47,8 @@ class UserController extends AdminController
    */
   protected function grid()
   {
+    
+
     try {
       $grid = new Grid(new User());
       // $grid->column('id', __('Id'));
@@ -75,6 +78,114 @@ class UserController extends AdminController
           return "Rejected";
         }
       });
+
+    
+
+      $grid->column('Wallet')->display(function()
+    {
+      
+      return "Balance";
+    })->expand(function($model){
+      $alluserdata=["Registration Amount"=>"<span style='color:red;font-weight:600'>Unpaid</span>","Booking Initial Amount"=>"<span style='color:red;font-weight:600'>Unpaid</span>","Final Amount"=>"<span style='color:red;font-weight:600'>Unpaid</span>"];
+        $user_id=$this->getkey();
+        $date=Carbon::now();
+        $allorders=Order::where('user_id',$user_id)->get();
+
+        
+        if(isset($allorders) && !empty($allorders))
+        {
+
+          foreach($allorders as $order)
+          {
+            $order_id[]=$order->id;
+          }
+        }
+        if(isset($order_id[0]) && !empty($order_id[0]))
+        {
+          $registration_amount=PaymentDataHandling::where('user_id',$user_id)->where('data','Registration_Amount')->get()->last();
+          if($registration_amount != null)
+          {
+            if(strtolower($registration_amount->payment_status)===strtolower("success"))
+            {
+
+              $alluserdata["Registration Amount"]=$registration_amount->transaction_amount."  <sapn style='color:green;font-weight:600'>(Paid)</sapn>";
+            }
+            else
+            {
+              $alluserdata["Registration Amount"]="<sapn style='color:red;font-weight:600'>(Payment fail)</sapn>";
+            }
+
+          }
+         
+            $initial_amount=PaymentDataHandling::where('order_id',$order_id)->where('data','Booking_Amount')->get()->last();
+            $final_amount_deduction=PaymentDataHandling::where('order_id',$order_id)->where('data','Booking_Final_Amount')->get()->last();
+
+            if($final_amount_deduction !=null)
+            {
+                $final_amount_deduction_value= $final_amount_deduction->transaction_amount;
+            }
+            if(isset($initial_amount)&& !empty($initial_amount))
+            {
+              if(strtolower($initial_amount->payment_status) == strtolower('SUCCESS'))
+              {
+            $cgstPercent = env('CGST', 9); // Set your CGST percentage here (e.g., 9%)
+            $sgstPercent = env('SGST', 9);
+            ; // Set your SGST percentage here (e.g., 9%)
+            $totalTaxAmount = ($final_amount_deduction_value * ($cgstPercent + $sgstPercent) / 100) ?? 0;
+            $centralTaxAmount = ($final_amount_deduction_value * $cgstPercent / 100) ?? 0;
+            $stateTaxAmount = ($final_amount_deduction_value * $sgstPercent / 100) ?? 0;
+            // iii- Find the complete amount
+            $completeAmount = ($final_amount_deduction_value + $totalTaxAmount) ?? 0;
+            $balance = $completeAmount -$initial_amount->transaction_amount;
+
+           
+              
+              $alluserdata['Booking Initial Amount']=$balance."   <sapn style='color:green;font-weight:600'>(Outstanding Amount)</sapn>";
+              }
+              else
+              {
+                $alluserdata['Booking Initial Amount']="<sapn style='color:red;font-weight:600'>(Payment fail)</sapn>";
+              }
+            }
+           $final_amount= PaymentDataHandling::where('order_id',$order_id)->where('data','Booking_Final_Amount')->get()->last();
+           if(isset($final_amount) && !empty($final_amount))
+           {
+            if(strtolower($final_amount->payment_status) === strtolower('success'))
+            {
+              $totalAmount=$final_amount->transaction_amount;
+             
+              
+              $cgstPercent = env('CGST', 9); // Set your CGST percentage here (e.g., 9%)
+              $sgstPercent = env('SGST', 9);
+              ; // Set your SGST percentage here (e.g., 9%)
+              $totalTaxAmount = ($totalAmount * ($cgstPercent + $sgstPercent) / 100) ?? 0;
+              $centralTaxAmount = ($totalAmount * $cgstPercent / 100) ?? 0;
+              $stateTaxAmount = ($totalAmount * $sgstPercent / 100) ?? 0;
+              // iii- Find the complete amount
+              $completeAmount = ($totalAmount + $totalTaxAmount) ?? 0;
+
+             $alluserdata['Final Amount']=$completeAmount."   <sapn style='color:green;font-weight:600'>(Paid)</sapn>";
+            }
+            else
+            {
+              $alluserdata['Final Amount']="<sapn style='color:green;font-weight:600'>(Paid)</sapn>";
+            }
+
+
+           }
+
+
+            
+  
+
+        }
+
+  
+        return new Table(['Header', 'Paid/Unpaid'],$alluserdata);
+    });
+
+   
+   
       // ->expand(function ($model) {
       //         $query = DB::table('comments')->where('approved', $model->approved)->where('admin_id',Admin::user()->id)->get();
       //         if ($model->approved == 0) {

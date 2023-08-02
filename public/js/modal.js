@@ -9,19 +9,11 @@ Array.from(document.getElementsByClassName('allbtn')).forEach(element => {
 
 
 
+let item=document.getElementsByClassName('item_name');
+Array.from(item).forEach(element=>{
+   element.parentNode.parentNode.classList.add('main');
 
-let a=document.getElementsByClassName('modal');
-let data="unique";
-let num=1;
-Array.from(a).forEach(element=>{
-  element.classList.add(data+num);
-  num++;
-})
-
-// $('.order-approved').click(function()
-// {
-//   console.log('data');
-// })
+});
 
 
 
