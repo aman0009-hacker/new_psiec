@@ -9,6 +9,25 @@ Array.from(document.getElementsByClassName('allbtn')).forEach(element => {
 
 
 
+
+
+Array.from(document.getElementsByClassName('payment_button')).forEach(main=>{
+  main.addEventListener('click',function()
+  {
+    let data=main.getAttribute('id');
+    console.log(data);
+    $('#exampleModal').modal('show');
+  })
+})
+
+
+
+
+
+
+
+
+
 let item=document.getElementsByClassName('item_name');
 Array.from(item).forEach(element=>{
    element.parentNode.parentNode.classList.add('main');

@@ -81,95 +81,292 @@ class UserController extends AdminController
 
     
 
-      $grid->column('Wallet')->display(function()
-    {
+    //   $grid->column('Wallet')->display(function()
+    // {
       
-      return "Balance";
-    })->expand(function($model){
-      $alluserdata=["Registration Amount"=>"<span style='color:red;font-weight:600'>Unpaid</span>","Booking Initial Amount"=>"<span style='color:red;font-weight:600'>Unpaid</span>","Pending Amount"=>"<span style='color:red;font-weight:600'>N/A</span>","Final Amount"=>"<span style='color:red;font-weight:600'>Unpaid</span>"];
-        $user_id=$this->getkey();
-        $date=Carbon::now();
-        $allorders=Order::where('user_id',$user_id)->where('payment_mode','online')->where('final_payment_status','verified')->get()->last();
+    //   return "Balance";
+    // })->expand(function($model){
+    //   $alluserdata=["Registration Amount"=>"<span style='color:red;font-weight:600'>Unpaid</span>","Booking Initial Amount"=>"<span style='color:red;font-weight:600'>Unpaid</span>","Pending Amount"=>"<span style='color:red;font-weight:600'>N/A</span>","Final Amount"=>"<span style='color:red;font-weight:600'>Unpaid</span>"];
+    //   $alluserdata=["Order No","Registration Amount","Booking Initial Amount","Pending Mode","Final Amount"];
+ 
+    //     $user_id=$this->getkey();
+    //     $date=Carbon::now();
+    //     $allorders=Order::where('user_id',$user_id)->where('payment_mode','online')->where('status','approved')->get()->last();
 
   
-        if(isset($allorders) && !empty($allorders))
-        {
+    //     if(isset($allorders) && !empty($allorders))
+    //     {
 
           
-            $order_id[]=$allorders->id;
+    //         $order_id[]=$allorders->id;
         
-        }
-        if(isset($order_id[0]) && !empty($order_id[0]))
-        {
-          $registration_amount=PaymentDataHandling::where('user_id',$user_id)->where('data','Registration_Amount')->get()->last();
-          if($registration_amount != null)
-          {
-            if(strtolower($registration_amount->payment_status)===strtolower("success"))
-            {
+    //     }
+    //     if(isset($order_id[0]) && !empty($order_id[0]))
+    //     {
+    //       $registration_amount=PaymentDataHandling::where('user_id',$user_id)->where('data','Registration_Amount')->get()->last();
+    //       if($registration_amount != null)
+    //       {
+    //         if(strtolower($registration_amount->payment_status)===strtolower("success"))
+    //         {
 
-              $alluserdata["Registration Amount"]=$registration_amount->transaction_amount."  <sapn style='color:green;font-weight:600'>(Paid)</sapn>";
-            }
-            else
-            {
-              $alluserdata["Registration Amount"]="<sapn style='color:red;font-weight:600'>(Payment fail)</sapn>";
-            }
+    //           $alluserdata["Registration Amount"]=$registration_amount->transaction_amount."  <sapn style='color:green;font-weight:600'>(Paid)</sapn>";
+    //         }
+    //         else
+    //         {
+    //           $alluserdata["Registration Amount"]="<sapn style='color:red;font-weight:600'>(Payment fail)</sapn>";
+    //         }
 
-          }
+    //       }
          
-            $initial_amount=PaymentDataHandling::where('order_id',$order_id)->where('data','Booking_Amount')->get()->last();
+    //         $initial_amount=PaymentDataHandling::where('order_id',$order_id)->where('data','Booking_Amount')->get()->last();
            
-            if(isset($initial_amount)&& !empty($initial_amount))
-            {
-              if(strtolower($initial_amount->payment_status) == strtolower('SUCCESS'))
-              {
+    //         if(isset($initial_amount)&& !empty($initial_amount))
+    //         {
+    //           if(strtolower($initial_amount->payment_status) == strtolower('SUCCESS'))
+    //           {
            
 
            
               
-              $alluserdata['Booking Initial Amount']=$initial_amount->transaction_amount."   <sapn style='color:green;font-weight:600'>(Outstanding Amount)</sapn>";
+    //           $alluserdata['Booking Initial Amount']=$initial_amount->transaction_amount."   <sapn style='color:green;font-weight:600'>(Outstanding Amount)</sapn>";
               
-              }
-              else
-              {
-                $alluserdata['Booking Initial Amount']="<sapn style='color:red;font-weight:600'>(Payment fail)</sapn>";
-              }
-            }
-           $final_amount= PaymentDataHandling::where('order_id',$order_id)->where('data','Booking_Final_Amount')->get()->last();
-           if(isset($final_amount) && !empty($final_amount))
-           {
-            if(strtolower($final_amount->payment_status) === strtolower('success'))
-            {
-              $totalAmount=$final_amount->transaction_amount;
+    //           }
+    //           else
+    //           {
+    //             $alluserdata['Booking Initial Amount']="<sapn style='color:red;font-weight:600'>(Payment fail)</sapn>";
+    //           }
+    //         }
+    //        $final_amount= PaymentDataHandling::where('order_id',$order_id)->where('data','Booking_Final_Amount')->get()->last();
+    //        if(isset($final_amount) && !empty($final_amount))
+    //        {
+    //         if(strtolower($final_amount->payment_status) === strtolower('success'))
+    //         {
+    //           $totalAmount=$final_amount->transaction_amount;
              
               
-              $cgstPercent = env('CGST', 9); // Set your CGST percentage here (e.g., 9%)
-              $sgstPercent = env('SGST', 9);
-              ; // Set your SGST percentage here (e.g., 9%)
-              $totalTaxAmount = ($totalAmount * ($cgstPercent + $sgstPercent) / 100) ?? 0;
-              $centralTaxAmount = ($totalAmount * $cgstPercent / 100) ?? 0;
-              $stateTaxAmount = ($totalAmount * $sgstPercent / 100) ?? 0;
-              // iii- Find the complete amount
-              $completeAmount = ($totalAmount + $totalTaxAmount) ?? 0;
+    //           $cgstPercent = env('CGST', 9); // Set your CGST percentage here (e.g., 9%)
+    //           $sgstPercent = env('SGST', 9);
+    //           ; // Set your SGST percentage here (e.g., 9%)
+    //           $totalTaxAmount = ($totalAmount * ($cgstPercent + $sgstPercent) / 100) ?? 0;
+    //           $centralTaxAmount = ($totalAmount * $cgstPercent / 100) ?? 0;
+    //           $stateTaxAmount = ($totalAmount * $sgstPercent / 100) ?? 0;
+    //           // iii- Find the complete amount
+    //           $completeAmount = ($totalAmount + $totalTaxAmount) ?? 0;
 
-             $alluserdata['Final Amount']=$completeAmount."   <sapn style='color:green;font-weight:600'>(Paid)</sapn>";
-             $alluserdata['Pending Amount']=$completeAmount-$initial_amount->transaction_amount."   <sapn style='color:green;font-weight:600'>(Pending)</sapn>";
-            }
-            else
-            {
-              $alluserdata['Final Amount']="<sapn style='color:green;font-weight:600'>(Paid)</sapn>";
-            }
+    //          $alluserdata['Final Amount']=$completeAmount;
+    //          $alluserdata['Pending Amount']=$completeAmount-$initial_amount->transaction_amount."   <sapn style='color:green;font-weight:600'>(Pending)</sapn>";
+    //         }
+    //         else
+    //         {
+    //           $alluserdata['Final Amount']="<sapn style='color:green;font-weight:600'>(Paid)</sapn>";
+    //         }
 
 
-           }
+    //        }
 
 
             
   
 
-        }
+    //     }
 
   
-        return new Table(['Header', 'Paid/Unpaid'],$alluserdata);
+    //     return new Table($alluserdata);
+    // });
+
+
+
+
+
+
+
+
+
+    
+
+
+    $grid->column('Wallet')->display(function()
+    {
+      
+      return "Balance";
+    })->expand(function($model){
+   
+
+      $alluserdata=[["<span style='color:red;font-weight:600'>NO Order</span>","<span style='color:red;font-weight:600'>Unpaid</span>","<span style='color:red;font-weight:600'>Unpaid</span>","<span style='color:red;font-weight:600'>Unpaid</span>","<span style='color:red;font-weight:600'>Unpaid</span>"]];
+
+$order_num=0;
+$order_num=3;
+
+            $userId=$this->id;
+          
+            $payment1=PaymentDataHandling::where('user_id',$userId)->where('data',"booking_amount")->first();
+
+            $allorder=order::where('user_id',$userId);
+
+            foreach($allorder as $singleorder)
+            {
+               $singleorder   
+            }
+            
+
+           
+         
+
+
+
+
+
+
+        // $user_id=$this->getkey();
+
+        // $order_no=0;
+        // $order_nos=0;
+
+        // $inital=0;
+        // $initials=2;
+
+        // $num=0;
+        //     $num1=1;
+
+        //     $payment_mode=0;
+        //     $payment_modes=3;
+
+        //     $final=0;
+        //     $finals=4;
+
+
+
+
+        // $registration_amount=PaymentDataHandling::where('user_id',$user_id)->where('data','Registration_Amount')->first();
+
+        // if($registration_amount === null)
+        // {
+
+        // }
+           
+
+        //      if(count($registration_amount) > 0)
+        
+        //      {
+
+        //   foreach($registration_amount as $singleregistrationamount)
+        //   {
+          
+            
+            
+
+                
+        //     if(strtolower($singleregistrationamount->payment_status)===strtolower("success"))
+        //     {
+                    
+                
+        //       $alluserdata[$num][$num1]= $singleregistrationamount->transaction_amount."  <sapn style='color:green;font-weight:600'>(Paid)</sapn>";
+        //     }
+          
+        //     elseif(strtolower($singleregistrationamount->payment_status)===strtolower("fail"))
+        //     {
+        //       $alluserdata[$num][$num1]=$singleregistrationamount->transaction_amount." <sapn style='color:red;font-weight:600'>(Payment fail)</sapn>";
+        //     }
+        //     $num++;
+        //   }
+
+        // }
+        // $allorders=Order::where('user_id',$user_id)->get();
+      
+
+        //   foreach($allorders as $singleordeer)
+        //   {
+        
+             
+
+             
+            
+        //     $alluserdata[$order_no][$order_nos]=$singleordeer->order_no;
+        //     $alluserdata[$payment_mode][$payment_modes]=$singleordeer->payment_mode;
+
+        //     $initial_amount=PaymentDataHandling::where('user_id',$user_id)->where('order_id',$singleordeer->id)->where('data','Booking_Amount')->get();
+            
+        //     $final_again_amount= PaymentDataHandling::where('user_id',$user_id)->where('order_id',$singleordeer->id)->where('data','Booking_Final_Amount')->get();
+           
+        //     foreach($initial_amount as $singleinitialamount)
+        //     {
+         
+        //       foreach($final_again_amount as $singlefinalagain)
+        //       {
+        //         if(strtolower($singleinitialamount->payment_status)===strtolower("success"))
+        //         {
+        //          if(strtolower($singlefinalagain->payment_status)===strtolower('success'))
+        //          {
+                  
+        //           $alluserdata[$inital][$initials]=$singleinitialamount->transaction_amount." <sapn style='color:green;font-weight:600'></sapn>";
+        //          }
+        //          else
+        //          {
+
+        //            $alluserdata[$inital][$initials]=$singleinitialamount->transaction_amount." <sapn style='color:green;font-weight:600'>(Outstanding Payment)</sapn>";
+        //          }
+             
+        //       }
+        //       elseif($singleinitialamount->payment_status === null)
+        //       {
+        //         $alluserdata[$inital][$initials]=" <sapn style='color:red;font-weight:600'>Unpaid</sapn>";
+        //       }     
+               
+        //       else
+        //       {
+        //         $alluserdata[$inital][$initials]=$singleinitialamount->transaction_amount." <sapn style='color:red;font-weight:600'>(fail)</sapn>";
+        //       }
+        //       }
+           
+        //     $inital++;
+        //     }
+
+        //     $final_amount= PaymentDataHandling::where('user_id',$user_id)->where('order_id',$singleordeer->id)->where('data','Booking_Final_Amount')->get();
+        //     foreach($final_amount as $finalsingle)
+        //     {
+              
+        //       $cgstPercent = env('CGST', 9); // Set your CGST percentage here (e.g., 9%)
+        //       $sgstPercent = env('SGST', 9);
+        //       ; // Set your SGST percentage here (e.g., 9%)
+        //       $totalTaxAmount = ($finalsingle->transaction_amount * ($cgstPercent + $sgstPercent) / 100) ?? 0;
+        //       $centralTaxAmount = ($finalsingle->transaction_amount * $cgstPercent / 100) ?? 0;
+        //       $stateTaxAmount = ($finalsingle->transaction_amount * $sgstPercent / 100) ?? 0;
+        //       // iii- Find the complete amount
+        //       $completeAmount = ($finalsingle->transaction_amount + $totalTaxAmount) ?? 0;
+
+        //       $alluserdata[$final][$finals]=$completeAmount." <span style='color:green;font-weight:600'>(Including Tax)</span><span style='color:red;font-weight:600'>(Unpaid)</span>";
+        //       if(strtolower($finalsingle->payment_status)===strtolower("success"))
+        //       {
+        //         $alluserdata[$final][$finals]=$completeAmount." <sapn style='color:green;font-weight:600'>(Paid)</sapn>";
+
+              
+        //       }
+   
+        //     }
+
+        //     $order_no++;
+        //     $payment_mode++;
+            
+        //   }
+
+
+      
+
+
+
+
+
+
+
+
+
+
+
+       
+     
+
+  
+        return new Table(["Order No","Registration Amount","Booking Initial Amount","Payment Mode","Final Amount"],$alluserdata);
     });
 
    
