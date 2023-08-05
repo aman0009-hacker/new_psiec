@@ -1,3 +1,4 @@
+
 @extends('userDashboard.maindashboard')
 
 @section('content')
@@ -56,6 +57,18 @@
 {
   fill:transparent!important;
 }
+
+/* changes today */
+#donut_single div[dir="ltr"]
+{
+  width:100%!important;
+}
+#donut_single svg
+{
+  display: block!important;
+  margin:auto!important;
+}
+/* end  */
 </style>
 
 
@@ -446,29 +459,37 @@
 
 
 
-          <script type="text/javascript">
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
+            <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
 
-      function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['Date', 'Amount'],
-          <?php echo $perday_trim ?>
-        ]);
+        function drawChart() {
+          var data = google.visualization.arrayToDataTable([
+            ['Date', 'Amount'],
+            <?php echo $perday_trim ?>
+          ]);
 
-        var options = {
-          title: 'Per day order',
-          hAxis: {title: 'Date', },
-          vAxis: {title: 'Amount'},
-          legend: 'none'
-        };
+            var numberFormatter = new google.visualization.NumberFormat({
+        pattern: 'Amount(#) ,##' // Format amount as two decimal places
+      });
 
-        var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+      numberFormatter.format(data, 1);
 
-        chart.draw(data, options);
-      }
-    </script>
-          
+            var options = {
+              title: 'Per day order',
+              hAxis: {title: 'Date', },
+              vAxis: {title: 'Amount'},
+              legend: 'none',
+              tooltip: { isHtml: true }
+              
+            }
+
+          var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+
+          chart.draw(data, options);
+        }
+      </script>
+            
 
   
 

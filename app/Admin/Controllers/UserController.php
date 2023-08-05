@@ -203,10 +203,7 @@ $order_num=3;
 
             $allorder=order::where('user_id',$userId);
 
-            foreach($allorder as $singleorder)
-            {
-               $singleorder   
-            }
+            
             
 
            

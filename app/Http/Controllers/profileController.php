@@ -232,18 +232,16 @@ class profileController extends Controller
     }
 
     public function userorder()
-    {
+    { 
         try {
-            $data = auth::user();
-            $mainItem = Order::where('user_id', $data->id)->get();
-            if (count($mainItem) == 0) {
-                $main = null;
-            } else {
-                foreach ($mainItem as $order_main) {
-                    $main[] = OrderItem::where('order_id', $order_main->id)->get();
-                }
-            }
-            return view('userDashboard.order', compact('data', 'main'));
+                 $data = auth::user();
+            $maindata=$data->id;
+        
+                $main=Order::with('orderItems')->where('user_id',$maindata)->get();
+    
+                
+                return view('userDashboard.order', compact('data', 'main'));
+            
         } catch (\Exception $ex) {
             Log::info($ex->getMessage());
         }
